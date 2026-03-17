@@ -1,35 +1,47 @@
-import OS 
+import os
 from openai import OpenAI
+from dotenv import load_dotenv
 
 # Load API client using environment variable 
 client = OpenAI(api_keys=os.getenv("OPENAI_API_KEY"))
 
-def optimize_resume(resume_text, job_description, model = "gpt-4o-mini")
- 
-"""
-Uses OpenAI to edit resume to any description via prompt engineering 
-"""
-system_prompt = """
+api_key = os.getenv("OPENAI_API_KEY")
+
+if not api_key:
+    raise ValueError("OPENAI_API_KEY not found. Check your .env file.")
+
+# Load API client using environment variable
+client = OpenAI(api_key=api_key)
+
+
+def optimize_resume(resume_text, job_description, model="gpt-4o-mini"):
+    """
+    Uses OpenAI to edit resume to any description via prompt engineering
+    """
+
+    system_prompt = """
 You are a senior technical recruiter and ATS optimization expert with 15+ years in tech consulting hiring, specializing in AI Transformation Consultant and Software Engineering roles.
 
 Style: Professional, confident, human-centered (align with "fiercely human" cultures like Slalom). Use strong action verbs, quantify where possible, keep bullets concise (1-2 lines), ATS-friendly (no fancy formatting, natural keyword inclusion).
 
-Process (chain-of-thought):
+Process:
 1. Analyze JD: Extract key skills, tech, responsibilities, keywords (e.g., AI Maturity Assessments, AIOps, agentic workflows, prompt engineering, GenAI landscape, SDLC, DevOps).
 2. Compare to resume: Highlight matches, rephrase for alignment, note real gaps (no fabrication).
 3. Rewrite sections: Job bullets, skills list, optional summary.
 4. Suggest 5-10 ATS keywords to add naturally.
 5. Output in clean markdown: Before/After for each section + recommendations.
 """
-user_prompt ="""
+
+    user_prompt = f"""
 Job Description:
 {job_description}
 
-Users Current Resume Texts
+Users Current Resume Text:
 {resume_text}
 
-Now optimize and tailor the resume for this role. Show Before/After versions of key sections (especially FDM bullets and skills). Suggest keywords. Keep it honest.
+Now optimize and tailor the resume for this role. Show Before/After versions of key sections (especially Bell bullets and skills). Suggest keywords. Keep it honest.
 """
+
     try:
         response = client.chat.completions.create(
             model=model,
@@ -41,16 +53,16 @@ Now optimize and tailor the resume for this role. Show Before/After versions of 
             max_tokens=2000
         )
         return response.choices[0].message.content
+
     except Exception as e:
         return f"Error occurred: {str(e)}\n(Check your API key, internet, or OpenAI account credits.)"
 
+
 # --- Main Exec ---
-if __name__ == "__main__"
+if __name__ == "__main__":
 
-# Put resume here
-
-my_resume = """
-Resilient and outcome-focused Computer Science graduate with professional industry experience supporting and developing enterprise systems. Skilled in Python and Java with hands-on experience troubleshooting production issues through log analysis and SQL queries, building backend logic, and working with cloud platforms such as AWS and Azure. Comfortable collaborating in Agile teams to deliver reliable and scalable software solutions. Strong interest in software engineering, cloud technologies, and applying AI/ML tools to improve system intelligence, automation, and data-driven applications.
+    # Put resume here
+    my_resume = """Resilient and outcome-focused Computer Science graduate with professional industry experience supporting and developing enterprise systems. Skilled in Python and Java with hands-on experience troubleshooting production issues through log analysis and SQL queries, building backend logic, and working with cloud platforms such as AWS and Azure. Comfortable collaborating in Agile teams to deliver reliable and scalable software solutions. Strong interest in software engineering, cloud technologies, and applying AI/ML tools to improve system intelligence, automation, and data-driven applications.
 
 
 9000 Jane Street, Vaughan, 
@@ -81,8 +93,8 @@ Trent University, Peterborough, ON — BSc. Honours Computer Science and  Busine
 Mohawk college, Hamilton, ON — Business Administration 
 09 2018 - 05 2020
 CERTIFICATIONS 
-CompTIA A+ (220‑1201/220‑1202) - 1 exam remaining
-AWS Cloud Practitioner (CLF‑C02)
+CompTIA A+ (220-1201/220-1202) - 1 exam remaining
+AWS Cloud Practitioner (CLF-C02)
 Microsoft Azure developer  - In Progress
 PROJECTS
 Pulse: iOS Health Tracking App Prototype (Swift, Firebase, REST APIs, Postman)
@@ -97,10 +109,6 @@ Developed a real-time hand gesture system for cursor and zoom control.
 Optimized frame processing to improve accuracy and reduce latency.
 Conducted root-cause analysis on system anomalies via logs and queries, akin to forensic troubleshooting
 
-
-
-
-
 TECHNICAL SKILLS
 Languages: Python (scripting & automation), Java, JavaScript, SQL, C#
 Cloud & AI: AWS, Azure , AI/ML/GenAI concepts, cloud-native patterns
@@ -108,11 +116,6 @@ DevOps & Infrastructure: Git/Version Control, Jenkins/CI/CD pipelines, Docker/co
 APIs & Data: REST APIs (design, implementation, testing with Postman), event-driven (interest in Kafka/Flink)
 Agile & Tools: Agile/Scrum, User Stories, Requirements Analysis, JIRA/Confluence 
 Other: Selenium (Java automation), OpenCV/MediaPipe (AI workflows), SQL queries/data validation, OOP/Data Structures/Algorithms, SDLC
-
-
-
-
-
 
 INTERPERSONAL  SKILLS
 Actively exploring cybersecurity domains through self-study (e.g., incident response basics, threat hunting concepts) and AI applications in security.
@@ -124,10 +127,8 @@ Team-oriented with Agile experience in requirements translation, cross-functiona
 Committed to Design Thinking, diverse viewpoints, and long-term growth in data services development.
 """
 
-# Put Job desciption here
-
-slalom_jd = """
-ob Title: AI Transformation Consultant (New role)
+    # Put Job description here
+    slalom_jd = """job Title: AI Transformation Consultant (New role)
 
 Practice: Transformation Design & Leadership 
 
@@ -157,14 +158,7 @@ What You’ll Bring
 
  • Communication: Exceptional interpersonal skills; you can clearly communicate findings and updates to both internal team members and client stakeholders.
 """
-print("Sending request to OpenAI...\n")
+
+    print("Sending request to OpenAI...\n")
     result = optimize_resume(my_resume, slalom_jd)
     print(result)
-
-
-
-
-
-
-
-
